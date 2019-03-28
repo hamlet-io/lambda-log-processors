@@ -13,6 +13,11 @@ def lambda_handler(event, context):
                 key = event['s3']['object']['key']
 
                 (sinks) = Ingester.from_environment()
-                Ingester.run(sinks=sinks bucket_name=bucket_name key=key)
-
+                ingester = Ingester(
+                    sinks=sinks,
+                    bucket_name=bucket_name,
+                    key=key
+                )
+                ingester.run()
+                
     return 'complete'
