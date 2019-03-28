@@ -1,0 +1,2 @@
+# python requirements for testing, but not runtime
+flake8

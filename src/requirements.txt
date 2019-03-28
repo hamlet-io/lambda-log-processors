@@ -1,0 +1,11 @@
+boto3
+configparser
+requests
+# AWS signature v4 authentication for requests
+aws-requests-auth
+# ElasticSearch 6.x API client
+elasticsearch>=6.0.0,<7.0.0
+# elasticsearch 6.2.0 has requirement urllib3<1.23,>=1.21.1
+urllib3==1.22
+# actually needed at runtime if only to prevent error
+pytest
