@@ -1,7 +1,7 @@
-import logging
+import mylogging
 import shlex
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = mylogging.getLogger(__name__)
 
 class Message:
 

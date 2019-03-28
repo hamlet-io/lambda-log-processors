@@ -3,21 +3,20 @@
 from ingester.ingester import Ingester
 
 def lambda_handler(event, context):
+    
     for record in event['Records']:
-        eventRecords = record['Records']
-        for event in eventRecords:
-            eventName = event['eventName']
-            if eventName.startsWith('ObjectCreated:') :
+        eventName = record['eventName']
+        if eventName.startswith('ObjectCreated:') :
 
-                bucket_name = event["s3"]['bucket']['name']
-                key = event['s3']['object']['key']
+            bucket_name = record["s3"]['bucket']['name']
+            key = record['s3']['object']['key']
 
-                (sinks) = Ingester.from_environment()
-                ingester = Ingester(
-                    sinks=sinks,
-                    bucket_name=bucket_name,
-                    key=key
-                )
-                ingester.run()
+            (sinks) = Ingester.from_environment()
+            ingester = Ingester(
+                sinks=sinks,
+                bucket_name=bucket_name,
+                key=key
+            )
+            ingester.run()
                 
     return 'complete'

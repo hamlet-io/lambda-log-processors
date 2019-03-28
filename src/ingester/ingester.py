@@ -3,12 +3,11 @@ from time import sleep
 import json
 import botocore
 import boto3
-import logging
+import mylogging
 from ingester.sink.elasticsearch import ElasticSink
-from ingester.source import SQSSource
 from ingester.source import S3Source
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = mylogging.getLogger(__name__)
 
 class Ingester:
 

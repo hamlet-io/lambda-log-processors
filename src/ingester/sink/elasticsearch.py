@@ -1,4 +1,4 @@
-import logging
+import mylogging
 import json
 import base64
 from aws_requests_auth.boto_utils import BotoAWSRequestsAuth
@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch.exceptions import ConflictError
 from ingester.sink import Sink
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = mylogging.getLogger(__name__)
 
 def decorate(log_message):
 
@@ -54,7 +54,7 @@ class ElasticSink(Sink):
 
     def put(self, msgs):
         for msg in msgs:
-            
+
             msg_id = base64.b64encode( msg['request_creation_time'] + msg['client:port']).encode('ascii')
             data_json = json.dumps(msg)
 
