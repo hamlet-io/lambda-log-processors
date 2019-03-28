@@ -14,3 +14,5 @@ def lambda_handler(event, context):
 
                 (sinks) = Ingester.from_environment()
                 Ingester.run(sinks=sinks bucket_name=bucket_name key=key)
+
+    return 'complete'
