@@ -1,13 +1,12 @@
 import logging
 import json
+import base64
 from aws_requests_auth.boto_utils import BotoAWSRequestsAuth
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch.exceptions import ConflictError
 from ingester.sink import Sink
 
-
 LOGGER = logging.getLogger(__name__)
-
 
 def decorate(log_message):
 
@@ -55,20 +54,10 @@ class ElasticSink(Sink):
 
     def put(self, msgs):
         for msg in msgs:
-            id_func = getattr(msg, self.index_name + '_id', None)
-            data_func = getattr(msg, self.index_name, None)
-            if id_func:
-                msg_id = id_func()
-            else:
-                msg_id = None
-            if data_func:
-                data = data_func()
-            else:
-                data = None
-            if data:
-                data_json = json.loads(data)
-            else:
-                data_json = None
+            
+            msg_id = base64.b64encode( msg['request_creation_time'] + msg['client:port']).encode('ascii')
+            data_json = json.dumps(msg)
+
             if msg_id and data_json and self.index_name:
                 decorate(data_json)
                 self._create_if_not_exists(
