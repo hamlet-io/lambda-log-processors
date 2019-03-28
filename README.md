@@ -2,7 +2,7 @@
 
 This function is intended to parse log messages provided by the AWS Application Load Balancer (ALB).
 
-The processor is fed logs through SQS based on S3 Event notifications for when a new log file is created. The processor will parse this event to find the log message location in S3, parse the event log message and send it to "sink" which is a backend that can do something with the message 
+The processor is fed logs through SQS based on S3 Event notifications for when a new log file is created. The processor will parse this event to find the log message location in S3, parse the event log message and send it to "sink" which is a backend that can do something with the message
 
 ## SQS Message Format
 
