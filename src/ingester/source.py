@@ -1,14 +1,10 @@
 import botocore
 import boto3
 import json
-import mylogging
 from io import TextIOWrapper
 from gzip import GzipFile
-
 from ingester.message import Message
 from abc import ABC
-
-LOGGER = mylogging.getLogger(__name__)
 
 class Source(ABC):
 

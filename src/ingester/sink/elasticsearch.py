@@ -1,12 +1,8 @@
-import mylogging
 import json
-import base64
 from aws_requests_auth.boto_utils import BotoAWSRequestsAuth
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch.exceptions import ConflictError
 from ingester.sink import Sink
-
-LOGGER = mylogging.getLogger(__name__)
 
 def decorate(log_message):
 
@@ -17,6 +13,8 @@ class ElasticSink(Sink):
     def __init__(
         self,
         host,
+        port,
+        use_ssl,
         region,
         service,
         index_name,
@@ -29,10 +27,16 @@ class ElasticSink(Sink):
                 aws_region=region,
                 aws_service=service
             )
+
+        if use_ssl.casefold() == 'true' or use_ssl == '1':
+            use_ssl = True
+        else:
+            use_ssl = False
+
         es_args = {
             "host": host,
-            "port": 443,
-            "use_ssl": True
+            "port": port,
+            "use_ssl": use_ssl
         }
         if use_sig4:
             es_args['http_auth'] = auth
@@ -55,11 +59,22 @@ class ElasticSink(Sink):
     def put(self, msgs):
         for msg in msgs:
 
-            msg_id = base64.b64encode( msg['request_creation_time'] + msg['client:port']).encode('ascii')
-            data_json = json.dumps(msg)
+            id_func = getattr(msg, 'id', None)
+            data_func = getattr(msg, 'payload', None)
 
+            if id_func:
+                msg_id = id_func()
+            else:
+                msg_id = None
+            if data_func:
+                data = data_func()
+            else:
+                data = None
+            if data:
+                data_json = json.dumps(data)
+            else:
+                data_json = None
             if msg_id and data_json and self.index_name:
-                decorate(data_json)
                 self._create_if_not_exists(
                     self.index_name,
                     data_json,

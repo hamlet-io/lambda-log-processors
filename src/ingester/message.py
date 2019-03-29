@@ -1,7 +1,6 @@
-import mylogging
 import shlex
-
-LOGGER = mylogging.getLogger(__name__)
+import base64
+import re
 
 class Message:
 
@@ -35,7 +34,12 @@ class Message:
             'redirect_url' : split_log[23],
             'error_reason' : split_log[24]
         }
+        self.request_creation_time = self.message['request_creation_time']
+        self.request_client_ip = self.message['client:port']
 
-    def get(self):
+    def id(self):
+        return re.sub('[^A-Za-z0-9]+', '', self.request_creation_time +  self.request_client_ip)
+
+    def payload(self):
 
         return self.message
