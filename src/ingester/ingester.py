@@ -37,7 +37,7 @@ class Ingester:
             use_sig4 = (os.environ.get("ELASTICSEARCH_API_AUTH").casefold().startswith("sig4".casefold()))  # NOQA
             elasticsearch_sink = ElasticSink(
                 host=os.environ.get("ELASTICSEARCH_API_FQDN"),
-                port=os.environ.get('ELASTICSEARCH_API_PORT', '443'),
+                port=int(os.environ.get('ELASTICSEARCH_API_PORT', '443')),
                 use_ssl=os.environ.get('ELASTICSEARCH_API_USE_SSL', 'True'),
                 region=os.environ.get("ELASTICSEARCH_API_REGION"),
                 service=os.environ.get("INGESTER_AWS_SERVICE"),
