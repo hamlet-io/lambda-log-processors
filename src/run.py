@@ -1,10 +1,11 @@
 from __future__ import print_function
 from ingester.ingester import Ingester
+import json
 
 def lambda_handler(event, context):
     print(event)
     for record in event['Records']:
-        event_payload = record['body']
+        event_payload = json.loads(record['body'])
         for record_event in event_payload['Records']:
             eventName = record_event['eventName']
             if eventName.startswith('ObjectCreated:'):

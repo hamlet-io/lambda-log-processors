@@ -1,22 +1,15 @@
-{ 
-    "Records" : [
+{
+    "Records": [
         {
-            "body" :
-            {
-                "Records": [
-                    {
-                        "eventName": "ObjectCreated:Put",
-                        "s3": {
-                            "bucket": {
-                                "name": "walksregister-integration-application-stage"
-                            },
-                            "object": {
-                                "key": "logs/794887647097_elasticloadbalancing_ap-southeast-2_app.metering-gosource-elb-api-v1.ed00bada0007c1cb_20190325T1210Z_13.210.33.185_1b2cnuv4.log.gz"
-                            }
-                        }
-                    }
-                ]
-            } 
+            "eventName": "ObjectCreated:Put",
+            "s3": {
+                "bucket": {
+                    "name": "bucket-name"
+                },
+                "object": {
+                    "key": "key"
+                }
+            }
         }
     ]
 }
