@@ -1,6 +1,7 @@
 import shlex
 import base64
 import re
+import datetime
 
 class Message:
 
@@ -34,12 +35,25 @@ class Message:
             'redirect_url' : split_log[23],
             'error_reason' : split_log[24]
         }
-        self.request_creation_time = self.message['request_creation_time']
-        self.request_client_ip = self.message['client:port']
+        self.timestamp = self.message['timestamp']
+
+        self.client_ip_port = self.message['client:port']
+        
+        client_ip = self.message['client:port'].split(":")
+        if len(client_ip) == 2:
+            self.message['client_ip'] = client_ip[0]
+            self.message['client_port'] = client_ip[1]
+        else:
+            self.message['client_ip'] = client_ip[:-1].join(":")
+            self.message['client_port'] = client_ip[-1]
+
 
     def id(self):
-        return re.sub('[^A-Za-z0-9]+', '', self.request_creation_time +  self.request_client_ip)
+        return re.sub('[^A-Za-z0-9]+', '', self.timestamp +  self.client_ip_port)
 
     def payload(self):
-
         return self.message
+    
+    def request_timestamp(self):
+        return  datetime.datetime.strptime(self.timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
+        

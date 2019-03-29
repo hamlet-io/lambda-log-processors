@@ -4,10 +4,6 @@ from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch.exceptions import ConflictError
 from ingester.sink import Sink
 
-def decorate(log_message):
-
-    return log_message
-
 class ElasticSink(Sink):
 
     def __init__(
@@ -61,6 +57,7 @@ class ElasticSink(Sink):
 
             id_func = getattr(msg, 'id', None)
             data_func = getattr(msg, 'payload', None)
+            timestamp_func = getattr(msg, 'request_timestamp', None)
 
             if id_func:
                 msg_id = id_func()
@@ -74,9 +71,14 @@ class ElasticSink(Sink):
                 data_json = json.dumps(data)
             else:
                 data_json = None
+            if timestamp_func:
+                timestamp = timestamp_func()
+                index_name = self.index_name + '-' + str(timestamp.year) + '-' + str(timestamp.month)
+            else:
+                index_name = None
             if msg_id and data_json and self.index_name:
                 self._create_if_not_exists(
-                    self.index_name,
+                    index_name,
                     data_json,
                     msg_id
                 )
