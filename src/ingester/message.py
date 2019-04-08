@@ -78,6 +78,7 @@ class Message:
                     'lat' : self.geo_ip_response.location.latitude
                 }
                 geoip_details['location'] = location
+            self.message['geoip'] = geoip_details
 
     def id(self):
         return re.sub('[^A-Za-z0-9]+', '', self.timestamp +  self.client_ip_port)
