@@ -4,6 +4,9 @@ import re
 import datetime
 import geoip2.database
 
+#Geo IP lookup details
+geo_ip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
+
 class Message:
 
     def __init__(self, log_msg):
@@ -38,6 +41,7 @@ class Message:
         }
         self.timestamp = self.message['timestamp']
 
+        # Find client IP
         self.client_ip_port = self.message['client:port']
         
         client_ip = self.message['client:port'].split(":")
@@ -48,9 +52,7 @@ class Message:
             self.message['client_ip'] = client_ip[:-1].join(":")
             self.message['client_port'] = client_ip[-1]
         
-        #Geo IP lookup details
-        geo_ip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
-        
+        # GeoIP Lookup
         try:
             self.geo_ip_response = geo_ip_reader.city(self.message['client_ip'])
             geo_ip_reader.close()
@@ -78,8 +80,15 @@ class Message:
                     'lat' : self.geo_ip_response.location.latitude
                 }
                 geoip_details['location'] = location
-            self.message['geoip'] = geoip_details
-            
+            self.message['client_geoip'] = geoip_details
+        
+        # Expand Request details 
+        if self.message['request'] is not None:
+            split_request = shlex.split(self.message['request'])
+            self.message['request_http_method'] = split_request[0]
+            self.message['request_uri'] = split_request[1]
+            self.message['request_http_version'] = split_request[2]
+
     def id(self):
         return re.sub('[^A-Za-z0-9]+', '', self.timestamp +  self.client_ip_port)
 

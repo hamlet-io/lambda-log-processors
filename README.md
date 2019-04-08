@@ -38,7 +38,7 @@ PUT _template/lb_logs
     "mappings": {
         "lb_log": {
             "properties": {
-                "geoip.location": {
+                "client_geoip.location": {
                 "type": "geo_point"
                 }
             }
