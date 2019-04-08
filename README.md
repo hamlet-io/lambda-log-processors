@@ -39,7 +39,34 @@ PUT _template/lb_logs
         "lb_log": {
             "properties": {
                 "client_geoip.location": {
-                "type": "geo_point"
+                    "type": "geo_point"
+                },
+                "request_processing_time" : {
+                    "type" : "double"
+                },
+                "response_processing_time" : {
+                    "type" : "double"
+                },
+                "target_processing_time" : {
+                    "type" : "double"
+                },
+                "sent_bytes" : {
+                    "type" : "integer"
+                },
+                "received_bytes" : {
+                    "type" : "integer"
+                },
+                "elb_status_code" : {
+                    "type" : "short"
+                },
+                "target_status_code" : {
+                    "type" : "short"
+                },
+                "client_ip" : {
+                    "type": "ip"
+                },
+                "target_ip" : {
+                    "type" : "ip"
                 }
             }
         }
