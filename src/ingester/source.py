@@ -26,9 +26,11 @@ class S3Source(Source):
         # get StreamingBody from botocore.response
         response = self.object.get()
 
-        # if gzipped
-        gzipped = GzipFile(None, 'rb', fileobj=response['Body'])
-        data = TextIOWrapper(gzipped)
+        try: 
+            gzipped = GzipFile(None, 'rb', fileobj=response['Body'])
+            data = TextIOWrapper(gzipped)
+        except OSError:
+            return []
 
         msgs = []
         for line in data:
