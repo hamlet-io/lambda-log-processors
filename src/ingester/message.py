@@ -2,6 +2,7 @@ import shlex
 import base64
 import re
 import datetime
+import geoip2.database
 
 class Message:
 
@@ -46,7 +47,37 @@ class Message:
         else:
             self.message['client_ip'] = client_ip[:-1].join(":")
             self.message['client_port'] = client_ip[-1]
+        
+        #Geo IP lookup details
+        geo_ip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
+        
+        try:
+            self.geo_ip_response = geo_ip_reader.city(self.message['client_ip'])
+            geo_ip_reader.close()
+        except AddressNotFoundError:
+            pass # Benign
+        
+        if self.geo_ip_response is not None: 
+            
+            geoip_details = {}
+            if self.geo_ip_response.continent.name is not None:
+                geoip_details['continent_name'] = self.geo_ip_response.continent.name
+            
+            if self.geo_ip_response.city.name is not None:
+                geoip_details['city_name'] = self.geo_ip_response.city.name
 
+            if self.geo_ip_response.country.iso_code is not None:
+                geoip_details['country_iso_code'] = self.geo_ip_response.country.iso_code
+
+            if self.geo_ip_response.subdivisions.most_specific.name is not None:
+                geoip_details['region_name'] = self.geo_ip_response.subdivisions.most_specific.name
+
+            if self.geo_ip_response.location is not None:
+                location = {
+                    'lon' : self.geo_ip_response.location.longitude,
+                    'lat' : self.geo_ip_response.location.latitude
+                }
+                geoip_details['location'] = location
 
     def id(self):
         return re.sub('[^A-Za-z0-9]+', '', self.timestamp +  self.client_ip_port)
@@ -56,4 +87,3 @@ class Message:
     
     def request_timestamp(self):
         return  datetime.datetime.strptime(self.timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')
-        
