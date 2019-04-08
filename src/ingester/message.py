@@ -77,7 +77,7 @@ class Message:
                     'lon' : self.geo_ip_response.location.longitude,
                     'lat' : self.geo_ip_response.location.latitude
                 }
-                self.message['location'] = location
+                geoip_details['location'] = location
             self.message['geoip'] = geoip_details
             
     def id(self):

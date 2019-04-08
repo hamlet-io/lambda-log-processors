@@ -28,3 +28,21 @@ An example of the payload:
 
 The Log format is processed based on the AWS documentation and creates one to one field mappings for each field
 https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
+
+# index setup
+
+```curl
+PUT _template/lb_logs
+{
+    "template": "lb_logs*",
+    "mappings": {
+        "lb_log": {
+            "properties": {
+                "geoip.location": {
+                "type": "geo_point"
+                }
+            }
+        }
+    }
+}
+```
