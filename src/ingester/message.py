@@ -4,9 +4,6 @@ import re
 import datetime
 import geoip2.database
 
-#Geo IP lookup details
-geo_ip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
-
 class Message:
 
     def __init__(self, log_msg):
@@ -54,8 +51,8 @@ class Message:
         
         # GeoIP Lookup
         try:
+            geo_ip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
             self.geo_ip_response = geo_ip_reader.city(self.message['client_ip'])
-            geo_ip_reader.close()
         except AddressNotFoundError:
             pass # Benign
         
