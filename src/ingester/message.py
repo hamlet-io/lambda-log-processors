@@ -6,7 +6,7 @@ import geoip2.database
 
 class Message:
 
-    def __init__(self, log_msg):
+    def __init__(self, log_msg, geoip_reader):
         split_log = shlex.split(log_msg)
 
         self.message = {
@@ -51,8 +51,7 @@ class Message:
         
         # GeoIP Lookup
         try:
-            geo_ip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
-            self.geo_ip_response = geo_ip_reader.city(self.message['client_ip'])
+            self.geo_ip_response = geoip_reader.city(self.message['client_ip'])
         except AddressNotFoundError:
             pass # Benign
         

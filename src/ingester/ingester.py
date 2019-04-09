@@ -6,6 +6,7 @@ import botocore
 import boto3
 from ingester.sink.elasticsearch import ElasticSink
 from ingester.source import S3Source
+import geoip2.database
 
 class Ingester:
 
@@ -14,6 +15,7 @@ class Ingester:
         self.sinks = sinks
         self.bucket_name = bucket_name
         self.key = key
+        self.geoip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
 
     def put_sinks(self, msgs):
         for sink in self.sinks:
@@ -22,7 +24,7 @@ class Ingester:
     def run(self ):
         print("Fetching messages...")
         self.source = S3Source(bucket_name=self.bucket_name, key=self.key)
-        msgs = self.source.get()
+        msgs = self.source.get(self.geoip_reader)
         print(
             "Got %s message%s" % (
                 len(msgs),
@@ -47,4 +49,3 @@ class Ingester:
             )
             sinks.append(elasticsearch_sink)
         return ( sinks )
-

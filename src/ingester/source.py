@@ -22,7 +22,7 @@ class S3Source(Source):
         if self.object is None:
             raise ValueError("Object Could not be found '{}'".format(key))
     
-    def get(self):
+    def get(self, geoip_reader):
         # get StreamingBody from botocore.response
         response = self.object.get()
 
@@ -34,5 +34,5 @@ class S3Source(Source):
 
         msgs = []
         for line in data:
-            msgs.append(Message(line))
+            msgs.append(Message(line, geoip_reader))
         return msgs
