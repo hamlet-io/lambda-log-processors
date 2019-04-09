@@ -38,45 +38,52 @@ class Message:
         }
         self.timestamp = self.message['timestamp']
 
+        # Clean null values from message
+        for key, value in self.message.items():
+            if value == '-' or value == '-1' :  
+                del self.message[key] 
+  
         # Find client IP
-        self.client_ip_port = self.message['client:port']
-        
-        client_ip = self.message['client:port'].split(":")
-        if len(client_ip) == 2:
-            self.message['client_ip'] = client_ip[0]
-            self.message['client_port'] = client_ip[1]
-        else:
-            self.message['client_ip'] = client_ip[:-1].join(":")
-            self.message['client_port'] = client_ip[-1]
-        
+        if self.message['client:port'] is not None:
+            self.client_ip_port = self.message['client:port']
+            
+            client_ip = self.message['client:port'].split(":")
+            if len(client_ip) == 2:
+                self.message['client_ip'] = client_ip[0]
+                self.message['client_port'] = client_ip[1]
+            else:
+                self.message['client_ip'] = client_ip[:-1].join(":")
+                self.message['client_port'] = client_ip[-1]
+            
         # GeoIP Lookup
-        try:
-            self.geo_ip_response = geoip_reader.city(self.message['client_ip'])
-        except AddressNotFoundError:
-            pass # Benign
-        
-        if self.geo_ip_response is not None: 
+        if self.message['client_ip'] is not None:
+            try:
+                self.geo_ip_response = geoip_reader.city(self.message['client_ip'])
+            except AddressNotFoundError:
+                pass # Benign
             
-            geoip_details = {}
-            if self.geo_ip_response.continent.name is not None:
-                geoip_details['continent_name'] = self.geo_ip_response.continent.name
-            
-            if self.geo_ip_response.city.name is not None:
-                geoip_details['city_name'] = self.geo_ip_response.city.name
+            if self.geo_ip_response is not None: 
+                
+                geoip_details = {}
+                if self.geo_ip_response.continent.name is not None:
+                    geoip_details['continent_name'] = self.geo_ip_response.continent.name
+                
+                if self.geo_ip_response.city.name is not None:
+                    geoip_details['city_name'] = self.geo_ip_response.city.name
 
-            if self.geo_ip_response.country.iso_code is not None:
-                geoip_details['country_iso_code'] = self.geo_ip_response.country.iso_code
+                if self.geo_ip_response.country.iso_code is not None:
+                    geoip_details['country_iso_code'] = self.geo_ip_response.country.iso_code
 
-            if self.geo_ip_response.subdivisions.most_specific.name is not None:
-                geoip_details['region_name'] = self.geo_ip_response.subdivisions.most_specific.name
+                if self.geo_ip_response.subdivisions.most_specific.name is not None:
+                    geoip_details['region_name'] = self.geo_ip_response.subdivisions.most_specific.name
 
-            if self.geo_ip_response.location is not None:
-                location = {
-                    'lon' : self.geo_ip_response.location.longitude,
-                    'lat' : self.geo_ip_response.location.latitude
-                }
-                geoip_details['location'] = location
-            self.message['client_geoip'] = geoip_details
+                if self.geo_ip_response.location is not None:
+                    location = {
+                        'lon' : self.geo_ip_response.location.longitude,
+                        'lat' : self.geo_ip_response.location.latitude
+                    }
+                    geoip_details['location'] = location
+                self.message['client_geoip'] = geoip_details
         
         # Expand Request details 
         if self.message['request'] is not None:
