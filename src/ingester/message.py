@@ -71,9 +71,12 @@ class Message:
                 geoip_details = {}
                 if self.geo_ip_response.continent.name is not None:
                     geoip_details['continent_name'] = self.geo_ip_response.continent.name
-                
+            
                 if self.geo_ip_response.city.name is not None:
                     geoip_details['city_name'] = self.geo_ip_response.city.name
+                
+                if self.geo_ip_response.country.name is not None:
+                    geoip_details['country_name'] = self.geo_ip_response.country.name
 
                 if self.geo_ip_response.country.iso_code is not None:
                     geoip_details['country_iso_code'] = self.geo_ip_response.country.iso_code
