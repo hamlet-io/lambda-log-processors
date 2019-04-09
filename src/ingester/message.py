@@ -39,9 +39,13 @@ class Message:
         self.timestamp = self.message['timestamp']
 
         # Clean null values from message
+        null_keys=[]
         for key, value in self.message.items():
             if value == '-' or value == '-1' :  
-                del self.message[key] 
+                null_keys.append(key)
+
+        for key in null_keys:
+            del self.message[key]
   
         # Find client IP
         if self.message['client:port'] is not None:
