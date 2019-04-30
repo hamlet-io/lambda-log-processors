@@ -1,0 +1,10 @@
+
+{
+    "deliveryStreamArn" : "arn:aws:firehose:us-east-1:123456789012:deliverystream/example-stream-name",
+    "records" : [
+        {
+            "recordId" : "abc123",
+            "data" : "H4sIAAAAAAAAAE1R227bMAz9FUHr3qJYF1uyDeQh2LI+FcOWDDVWF4UvSirAtgzJiREE+ffSKZLmjeQ5JM8hT7jV3hc7vTn2Gqf453KzfHtardfLxxWeYTt22kE55LESCY8oFyGUG7t7dHbfAxLoyratdpUOTDfonSsGY7ug6PvGVLc4GMcxGHUZHNhn+3pwumih/45IICZAJEAkB3bpKeqoFknCiJYlI6GSJUloqQgTta6U2LJ4W8BEvy995Uw/jfllmkE7j9MXfNNG7rQRb5uOfEHak+a+P9sap9+t1/6iMQNV2Y2d9UdQ7zOQmFHCVj9+//v7/Ic/Pcf/8evF2eqgu2HafsKmBoMiVEzEgkvBhEikVFLGiYRcUsVUqJJQqpDTWCQhZRw4CiCmJLgaDDxnKFq4M4siKTmnCYNXzK5Pg/Gn/JrkOEU53rij6XZosKh3tgIE9cWxBUloax2yrtYOfZOMqghtnW2RoISGhFOWoNEM7+jB6aEwzUKpeTRDD7Xxld3D8eqFEnPJpxpcpbll36+MRfTFXoh5rKIcz0DQZOJT2rRkWibohrGUslSwObgRVOb4jM+v5w8YTvI7jQIAAA=="
+        }
+    ]
+}
