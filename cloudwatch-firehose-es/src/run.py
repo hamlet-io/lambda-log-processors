@@ -66,17 +66,24 @@ def transformLogEvent(log_event):
     str: The transformed log event.
     """
 
+    json_event = {}
+
+    isotime = datetime.datetime.utcfromtimestamp( log_event['timestamp'] / 1000 ).isoformat()
+    print('using cloudwatch timestamp ' + isotime )
+
     try: 
-        jsondata = json.loads(log_event['message'])
-        if jsondata.get('timestamp') is None and log_event['timestamp'] is not None:
-            print('using cloudwatch timestamp ' + str(log_event['timestamp']) )
-            jsondata['timestamp'] = log_event['timestamp']
-        return json.dumps(jsondata)
+        json_event = json.loads(log_event['message'])
+        if json_event.get('timestamp') is None:
+            json_event['timestamp'] = isotime
         
     except json.JSONDecodeError:
-        return log_event['message'] + '\n'
+        json_event = {
+            'message' : log_event['message'],
+            'timestamp' : isotime
+        }
     
-    
+    return json.dumps(json_event)
+
 def processRecords(records):
     for r in records:
         data = base64.b64decode(r['data'])
@@ -94,7 +101,7 @@ def processRecords(records):
                 'recordId': recId
             }
         elif data['messageType'] == 'DATA_MESSAGE':
-            data = ''.join([transformLogEvent(e) for e in data['logEvents']])
+            data = ','.join([transformLogEvent(e) for e in data['logEvents']])
             data = str(base64.b64encode(data.encode()), 'utf-8')
             yield {
                 'data': data,
@@ -106,7 +113,6 @@ def processRecords(records):
                 'result': 'Dropped',
                 'recordId': recId
             }
-
 
 def putRecordsToFirehoseStream(streamName, records, client, attemptsMade, maxAttempts):
     failedRecords = []
@@ -147,7 +153,6 @@ def getReingestionRecord(reIngestionRecord):
     return {'Data': reIngestionRecord['data']}
 
 def lambda_handler(event, context):
-    print(event)
     streamARN = event['deliveryStreamArn']
     region = streamARN.split(':')[3]
     streamName = streamARN.split('/')[1]
