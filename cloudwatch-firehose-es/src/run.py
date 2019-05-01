@@ -101,7 +101,7 @@ def processRecords(records):
                 'recordId': recId
             }
         elif data['messageType'] == 'DATA_MESSAGE':
-            data = ','.join([transformLogEvent(e) for e in data['logEvents']])
+            data = '\n'.join([transformLogEvent(e) for e in data['logEvents']])
             data = str(base64.b64encode(data.encode()), 'utf-8')
             yield {
                 'data': data,
