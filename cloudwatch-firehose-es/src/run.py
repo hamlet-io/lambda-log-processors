@@ -93,7 +93,7 @@ def processRecords(records):
             }
         elif data['messageType'] == 'DATA_MESSAGE':
             data = ''.join([transformLogEvent(e) for e in data['logEvents']])
-            data = base64.b64encode(data.encode())
+            data = str(base64.b64encode(data.encode()), 'utf-8')
             yield {
                 'data': data,
                 'result': 'Ok',
