@@ -50,6 +50,7 @@ import base64
 import json
 import gzip
 import boto3
+import datetime
 
 
 def transformLogEvent(log_event):
@@ -67,7 +68,8 @@ def transformLogEvent(log_event):
 
     try: 
         jsondata = json.loads(log_event['message'])
-        if jsondata.get('timestamp') is None:
+        if jsondata.get('timestamp') is None and log_event['timestamp'] is not None:
+            print('using cloudwatch timestamp ' + str(log_event['timestamp']) )
             jsondata['timestamp'] = log_event['timestamp']
         return json.dumps(jsondata)
         
@@ -145,6 +147,7 @@ def getReingestionRecord(reIngestionRecord):
     return {'Data': reIngestionRecord['data']}
 
 def lambda_handler(event, context):
+    print(event)
     streamARN = event['deliveryStreamArn']
     region = streamARN.split(':')[3]
     streamName = streamARN.split('/')[1]
