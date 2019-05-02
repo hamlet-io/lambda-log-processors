@@ -117,9 +117,10 @@ def processRecords(records):
                     reingest_json = json.dumps(reingest_event) + '\n'
                     reingest_bytes = reingest_json.encode('utf-8')
                     reignest_compress = gzip.compress(reingest_bytes)
+                    reingest_base64 = str(base64.b64encode(reignest_compress), 'utf-8')
 
                     yield {
-                        'data' : reignest_compress,
+                        'data' : reingest_base64,
                         'result' : 'Reingest',
                         'recordId' : recId
                     }
@@ -168,7 +169,6 @@ def getReingestionRecord(reIngestionRecord):
     return {'Data': reIngestionRecord['data']}
 
 def lambda_handler(event, context):
-    print('Processing ' + json.dumps(event))
     streamARN = event['deliveryStreamArn']
     region = streamARN.split(':')[3]
     streamName = streamARN.split('/')[1]
@@ -192,7 +192,8 @@ def lambda_handler(event, context):
                 recordsToReingest.append(
                     getReingestionRecord(rec)
                 )
-                del(records[idx])
+                print('removing ' + json.dumps(rec))
+                del records[idx]
             else:
                 recordsToReingest.append(
                     getReingestionRecord(dataByRecordId[rec['recordId']])
