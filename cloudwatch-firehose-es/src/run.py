@@ -218,7 +218,7 @@ def lambda_handler(event, context):
         for recordBatch in putRecordBatches:
             putRecordsToFirehoseStream(streamName, recordBatch, client, attemptsMade=0, maxAttempts=20)
             recordsReingestedSoFar += len(recordBatch)
-            print('Reingested %d/%d records out of %d' % (recordsReingestedSoFar, totalRecordsToBeReingested, len(event['records'])))
+            print('Reingested %d/%d' % (recordsReingestedSoFar, totalRecordsToBeReingested ))
     else:
         print('No records to be reingested')
     
