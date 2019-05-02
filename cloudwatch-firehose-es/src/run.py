@@ -227,6 +227,6 @@ def lambda_handler(event, context):
     for rec in recordsToReturn:
         status.append(rec['result'])
     
-    print( 'Record Statuses: ' + ', '.join(status) + ' - Log Record Count: ' + str(len(records)) )
+    print( 'Records processed: ' + str(len(recordsToReturn)) + ' - Log records found: ' + str(len(records)) )
    
     return {"records": recordsToReturn}
