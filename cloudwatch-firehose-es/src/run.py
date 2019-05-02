@@ -69,7 +69,6 @@ def transformLogEvent(log_event):
     json_event = {}
 
     isotime = datetime.datetime.utcfromtimestamp( log_event['timestamp'] / 1000 ).isoformat()
-    print('using cloudwatch timestamp ' + isotime )
 
     try: 
         json_event = json.loads(log_event['message'])
@@ -165,6 +164,7 @@ def getReingestionRecord(reIngestionRecord):
     return {'Data': reIngestionRecord['data']}
 
 def lambda_handler(event, context):
+    event
     streamARN = event['deliveryStreamArn']
     region = streamARN.split(':')[3]
     streamName = streamARN.split('/')[1]
@@ -185,9 +185,10 @@ def lambda_handler(event, context):
             totalRecordsToBeReingested += 1
 
             if rec['result'] == 'Reingest': 
-                    recordsToReingest.append(
-                        getReingestionRecord(rec)
-                    )
+                recordsToReingest.append(
+                    getReingestionRecord(rec)
+                )
+                del(records[idx])
             else:
                 recordsToReingest.append(
                     getReingestionRecord(dataByRecordId[rec['recordId']])
