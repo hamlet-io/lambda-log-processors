@@ -177,11 +177,12 @@ def lambda_handler(event, context):
     putRecordBatches = []
     recordsToReingest = []
     totalRecordsToBeReingested = 0
+    recordsToReturn = []
 
     for idx, rec in enumerate(records):
         if rec['result'] != 'Ok' and rec['result'] != 'Reingest':
             continue
-        
+
         projectedSize += len(rec['data']) + len(rec['recordId'])
         # 6000000 instead of 6291456 to leave ample headroom for the stuff we didn't account for
         if projectedSize > 6000000 or rec['result'] == 'Reingest':
@@ -191,13 +192,15 @@ def lambda_handler(event, context):
                 recordsToReingest.append(
                     getReingestionRecord(createReingestionRecord(rec))
                 )
-                del records[idx]
             else:
                 recordsToReingest.append(
                     getReingestionRecord(dataByRecordId[rec['recordId']])
                 )
                 records[idx]['result'] = 'Dropped'
                 del(records[idx]['data'])
+
+        if rec['result'] != 'Reingest': 
+                recordsToReturn.append(rec)
 
         # split out the record batches into multiple groups, 500 records at max per group
         if len(recordsToReingest) == 500:
@@ -220,9 +223,10 @@ def lambda_handler(event, context):
         print('No records to be reingested')
 
     status = []
-    for rec in records:
+    
+    for rec in recordsToReturn:
         status.append(rec['result'])
     
-    print( 'Record Statuses: ' + ', '.join(status))
+    print( 'Record Statuses: ' + ', '.join(status) + ' - Log Record Count: ' + str(len(records)) )
    
-    return {"records": records}
+    return {"records": recordsToReturn}
