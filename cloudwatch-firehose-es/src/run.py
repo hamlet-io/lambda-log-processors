@@ -117,10 +117,9 @@ def processRecords(records):
                     reingest_json = json.dumps(reingest_event) + '\n'
                     reingest_bytes = reingest_json.encode('utf-8')
                     reignest_compress = gzip.compress(reingest_bytes)
-                    reingest_base64 = str(base64.b64encode(reignest_compress), 'utf-8')
 
                     yield {
-                        'data' : reingest_base64,
+                        'data' : bytes(reignest_compress),
                         'result' : 'Reingest',
                         'recordId' : recId
                     }
@@ -192,7 +191,6 @@ def lambda_handler(event, context):
                 recordsToReingest.append(
                     getReingestionRecord(rec)
                 )
-                print('removing ' + json.dumps(rec))
                 del records[idx]
             else:
                 recordsToReingest.append(
