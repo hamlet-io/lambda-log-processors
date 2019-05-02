@@ -117,10 +117,9 @@ def processRecords(records):
                     reingest_json = json.dumps(reingest_event) + '\n'
                     reingest_bytes = reingest_json.encode('utf-8')
                     reignest_compress = gzip.compress(reingest_bytes)
-                    reingest_base64 = base64.b64encode(reignest_compress)
 
                     yield {
-                        'data' : reingest_base64,
+                        'data' : reignest_compress,
                         'result' : 'Reingest',
                         'recordId' : recId
                     }
