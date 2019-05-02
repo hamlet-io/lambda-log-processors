@@ -219,4 +219,10 @@ def lambda_handler(event, context):
     else:
         print('No records to be reingested')
 
+    status = []
+    for rec in records:
+        status.append(rec['result'])
+    
+    print( 'Record Statuses: ' + ', '.join(status))
+   
     return {"records": records}
