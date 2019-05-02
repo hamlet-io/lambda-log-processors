@@ -101,13 +101,25 @@ def processRecords(records):
                 'recordId': recId
             }
         elif data['messageType'] == 'DATA_MESSAGE':
-            data = ''.join([transformLogEvent(e) for e in data['logEvents']])
-            data = str(base64.b64encode(data.encode()), 'utf-8')
-            yield {
-                'data': data,
-                'result': 'Ok',
-                'recordId': recId
-            }
+            
+            for i, event in enumerate(data['logEvents']): 
+                if i == 0:
+                    cw_log_data = transformLogEvent(event)
+                    yield {
+                        'data' : str(base64.b64encode(cw_log_data.encode()), 'utf-8'),
+                        'result' : 'Ok',
+                        'recordId' : recId
+                    }
+                else:
+
+                    reingest_event = data 
+                    reingest_event['logEvents'] = [ event ]
+
+                    yield {
+                        'data' : str(base64.b64encode(gzip.compress( bytes( json.dumps(reingest_event), encoding='utf8') )), 'utf-8'),
+                        'result' : 'Reingest',
+                        'recordId' : recId
+                    }
         else:
             yield {
                 'result': 'Dropped',
@@ -164,17 +176,24 @@ def lambda_handler(event, context):
     totalRecordsToBeReingested = 0
 
     for idx, rec in enumerate(records):
-        if rec['result'] != 'Ok':
+        if rec['result'] != 'Ok' and rec['result'] != 'Reingest':
             continue
+        
         projectedSize += len(rec['data']) + len(rec['recordId'])
         # 6000000 instead of 6291456 to leave ample headroom for the stuff we didn't account for
-        if projectedSize > 6000000:
+        if projectedSize > 6000000 or rec['result'] == 'Reingest':
             totalRecordsToBeReingested += 1
-            recordsToReingest.append(
-                getReingestionRecord(dataByRecordId[rec['recordId']])
-            )
-            records[idx]['result'] = 'Dropped'
-            del(records[idx]['data'])
+
+            if rec['result'] == 'Reingest': 
+                    recordsToReingest.append(
+                        getReingestionRecord(rec)
+                    )
+            else:
+                recordsToReingest.append(
+                    getReingestionRecord(dataByRecordId[rec['recordId']])
+                )
+                records[idx]['result'] = 'Dropped'
+                del(records[idx]['data'])
 
         # split out the record batches into multiple groups, 500 records at max per group
         if len(recordsToReingest) == 500:
