@@ -221,11 +221,6 @@ def lambda_handler(event, context):
             print('Reingested %d/%d records out of %d' % (recordsReingestedSoFar, totalRecordsToBeReingested, len(event['records'])))
     else:
         print('No records to be reingested')
-
-    status = []
-    
-    for rec in recordsToReturn:
-        status.append(rec['result'])
     
     print( 'Records processed: ' + str(len(recordsToReturn)) + ' - Log records found: ' + str(len(records)) )
    
