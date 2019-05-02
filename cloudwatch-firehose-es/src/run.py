@@ -164,7 +164,7 @@ def getReingestionRecord(reIngestionRecord):
     return {'Data': reIngestionRecord['data']}
 
 def lambda_handler(event, context):
-    event
+    print('Processing ' + json.dumps(event))
     streamARN = event['deliveryStreamArn']
     region = streamARN.split(':')[3]
     streamName = streamARN.split('/')[1]
