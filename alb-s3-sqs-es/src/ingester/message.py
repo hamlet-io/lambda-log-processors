@@ -63,7 +63,7 @@ class Message:
         if self.message['client_ip'] is not None:
             try:
                 self.geo_ip_response = geoip_reader.city(self.message['client_ip'])
-            except AddressNotFoundError:
+            except geoip2.AddressNotFoundError:
                 pass # Benign
             
             if self.geo_ip_response is not None: 

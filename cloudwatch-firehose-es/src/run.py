@@ -101,9 +101,16 @@ def processRecords(records):
             }
         elif data['messageType'] == 'DATA_MESSAGE':
             
+            cloudwatch_info = {}
+            cloudwatch_info['log_group'] = data['logGroup']
+            cloudwatch_info['log_stream'] = data['logStream']
+
             for i, event in enumerate(data['logEvents']): 
                 if i == 0:
                     cw_log_data = transformLogEvent(event)
+
+                    cw_log_data['cloudwatch'] = cloudwatch_info
+
                     yield {
                         'data' : str(base64.b64encode(cw_log_data.encode()), 'utf-8'),
                         'result' : 'Ok',
