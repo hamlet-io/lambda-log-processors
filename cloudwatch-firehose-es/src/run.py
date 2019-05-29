@@ -53,7 +53,7 @@ import boto3
 import datetime
 
 
-def transformLogEvent(log_event):
+def transformLogEvent(log_event, cloudwatch_info):
     """Transform each log event.
 
     The default implementation below will to to create a json message from the message field if it can't 
@@ -81,6 +81,8 @@ def transformLogEvent(log_event):
             'timestamp' : isotime
         }
     
+    json_event['cloudwatch'] = cloudwatch_info
+
     return json.dumps(json_event)
 
 def processRecords(records):
@@ -107,9 +109,7 @@ def processRecords(records):
 
             for i, event in enumerate(data['logEvents']): 
                 if i == 0:
-                    cw_log_data = transformLogEvent(event)
-
-                    cw_log_data['cloudwatch'] = cloudwatch_info
+                    cw_log_data = transformLogEvent(event, cloudwatch_info)
 
                     yield {
                         'data' : str(base64.b64encode(cw_log_data.encode()), 'utf-8'),
