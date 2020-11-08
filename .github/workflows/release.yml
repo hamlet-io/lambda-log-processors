@@ -19,7 +19,7 @@ jobs:
           npm ci
           npx sls package
 
-      -name: Build cw firehose project
+      - name: Build cw firehose project
         run: |
           cd cloudwatch-firehose-es
           npm ci
