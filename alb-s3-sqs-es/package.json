@@ -1,0 +1,19 @@
+{
+  "name": "alb-s3-sqs-es",
+  "version": "1.0.0",
+  "description": "Serverless Packaging - Alb S3 logs with lambda",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codeontap/lambda-cloudwatch-slack.git"
+  },
+  "author": "",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/codeontap/lambda-cloudwatch-slack/issues"
+  },
+  "homepage": "https://github.com/codeontap/lambda-cloudwatch-slack#readme",
+  "devDependencies": {
+    "serverless": "^1.83.0",
+    "serverless-python-requirements": "^5.1.0"
+  }
+}
