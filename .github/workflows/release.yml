@@ -1,0 +1,59 @@
+on:
+  push:
+    tags:
+      - 'v*'
+
+name: Create Lambda Releases
+
+jobs:
+  build:
+    name: Create Lambda Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build alb project
+        run: |
+          cd alb-s3-sqs-es
+          npm ci
+          npx sls package
+
+      -name: Build cw firehose project
+        run: |
+          cd cloudwatch-firehose-es
+          npm ci
+          npx sls package
+
+      - name: Create Tag Release
+        id: create_tag_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref  }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload alb asset
+        id: upload_alb_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_tag_release.outputs.upload_url }}
+          asset_path: ./alb-s3-sqs-es/.serverless/alb-s3.zip
+          asset_name: alb-s3.zip
+          asset_content_type: application/zip
+
+      - name: Upload cw firehose asset
+        id: upload_cw_firehose_release_asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_tag_release.outputs.upload_url }}
+          asset_path: ./cloudwatch-firehose-es/.serverless/cloudwatch-firehose.zip
+          asset_name: cloudwatch-firehose.zip
+          asset_content_type: application/zip
