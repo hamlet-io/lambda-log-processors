@@ -1,4 +1,4 @@
-service: cloudwatch-firehose-es
+service: alb-s3-sqs-es
 
 plugins:
   - serverless-python-requirements
@@ -13,7 +13,7 @@ package:
 
 custom:
   pythonRequirements:
-    dockerizePip: 'non-linux'
+    dockerizePip: true
     invalidateCaches: true
     fileName: requirements.txt
 

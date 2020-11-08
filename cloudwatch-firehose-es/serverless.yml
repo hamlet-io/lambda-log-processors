@@ -13,7 +13,7 @@ package:
 
 custom:
   pythonRequirements:
-    dockerizePip: 'non-linux'
+    dockerizePip: true
     invalidateCaches: true
     fileName: requirements.txt
 
