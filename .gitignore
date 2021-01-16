@@ -1,0 +1,7 @@
+# Standard packages
+**/node_modules
+**/.venv
+**/.serverless
+
+# Pycache files
+__pycache__
