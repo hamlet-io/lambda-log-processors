@@ -1,7 +1,10 @@
 on:
   push:
+    branches:
+      - '*'
     tags:
       - 'v*'
+  pull_request:
 
 name: Create Lambda Releases
 
@@ -34,6 +37,7 @@ jobs:
       - name: Create Tag Release
         id: create_tag_release
         uses: actions/create-release@v1
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -45,6 +49,7 @@ jobs:
       - name: Upload alb asset
         id: upload_alb_release_asset
         uses: actions/upload-release-asset@v1
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -56,6 +61,7 @@ jobs:
       - name: Upload cw firehose asset
         id: upload_cw_firehose_release_asset
         uses: actions/upload-release-asset@v1
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
