@@ -13,15 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build alb project
+      - name: Test ALB
+        working-directory: alb-s3-sqs-es/src/
         run: |
-          cd alb-s3-sqs-es
+          pip install -r requirements.txt
+          pytest
+
+      - name: Build alb project
+        working-directory: alb-s3-sqs-es/
+        run: |
           npm ci
           npx sls package
 
       - name: Build cw firehose project
+        working-directory: cloudwatch-firehose-es/
         run: |
-          cd cloudwatch-firehose-es
           npm ci
           npx sls package
 
@@ -43,7 +49,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_tag_release.outputs.upload_url }}
-          asset_path: ./alb-s3-sqs-es/.serverless/src-alb-s3-sqs-es-dev-alb-s3.zip
+          asset_path: alb-s3-sqs-es/.serverless/src-alb-s3-sqs-es-dev-alb-s3.zip
           asset_name: alb-s3.zip
           asset_content_type: application/zip
 
@@ -54,6 +60,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_tag_release.outputs.upload_url }}
-          asset_path: ./cloudwatch-firehose-es/.serverless/cloudwatch-firehose.zip
+          asset_path: cloudwatch-firehose-es/.serverless/cloudwatch-firehose.zip
           asset_name: cloudwatch-firehose.zip
           asset_content_type: application/zip
