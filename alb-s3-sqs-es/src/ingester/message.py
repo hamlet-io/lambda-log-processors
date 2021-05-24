@@ -1,4 +1,4 @@
-import shlex
+import csv
 import re
 import datetime
 import geoip2.errors
@@ -6,7 +6,8 @@ import geoip2.errors
 class Message:
 
     def __init__(self, log_msg, geoip_reader):
-        split_log = shlex.split(log_msg)
+
+        split_log = csv.reader([ log_msg ], delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL )
 
         self.message = {
             'type' : split_log[0],
@@ -93,7 +94,7 @@ class Message:
 
         # Expand Request details
         if self.message['request'] is not None:
-            split_request = shlex.split(self.message['request'])
+            split_request = csv.reader([ self.message['request'] ], delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL )
             self.message['request_http_method'] = split_request[0]
             self.message['request_uri'] = split_request[1]
             self.message['request_http_version'] = split_request[2]
