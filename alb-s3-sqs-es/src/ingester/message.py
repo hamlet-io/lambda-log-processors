@@ -1,8 +1,7 @@
 import shlex
-import base64
 import re
 import datetime
-import geoip2.database
+import geoip2.errors
 
 class Message:
 
@@ -41,16 +40,16 @@ class Message:
         # Clean null values from message
         null_keys=[]
         for key, value in self.message.items():
-            if value == '-' or value == '-1' :  
+            if value == '-' or value == '-1' :
                 null_keys.append(key)
 
         for key in null_keys:
             del self.message[key]
-  
+
         # Find client IP
         if self.message['client:port'] is not None:
             self.client_ip_port = self.message['client:port']
-            
+
             client_ip = self.message['client:port'].split(":")
             if len(client_ip) == 2:
                 self.message['client_ip'] = client_ip[0]
@@ -58,23 +57,23 @@ class Message:
             else:
                 self.message['client_ip'] = client_ip[:-1].join(":")
                 self.message['client_port'] = client_ip[-1]
-            
+
         # GeoIP Lookup
         if self.message['client_ip'] is not None:
             try:
                 self.geo_ip_response = geoip_reader.city(self.message['client_ip'])
-            except geoip2.AddressNotFoundError:
+            except geoip2.errors.AddressNotFoundError:
                 pass # Benign
-            
-            if self.geo_ip_response is not None: 
-                
+
+            if self.geo_ip_response is not None:
+
                 geoip_details = {}
                 if self.geo_ip_response.continent.name is not None:
                     geoip_details['continent_name'] = self.geo_ip_response.continent.name
-            
+
                 if self.geo_ip_response.city.name is not None:
                     geoip_details['city_name'] = self.geo_ip_response.city.name
-                
+
                 if self.geo_ip_response.country.name is not None:
                     geoip_details['country_name'] = self.geo_ip_response.country.name
 
@@ -91,8 +90,8 @@ class Message:
                     }
                     geoip_details['location'] = location
                 self.message['client_geoip'] = geoip_details
-        
-        # Expand Request details 
+
+        # Expand Request details
         if self.message['request'] is not None:
             split_request = shlex.split(self.message['request'])
             self.message['request_http_method'] = split_request[0]
@@ -104,6 +103,6 @@ class Message:
 
     def payload(self):
         return self.message
-    
+
     def request_timestamp(self):
         return  datetime.datetime.strptime(self.timestamp, '%Y-%m-%dT%H:%M:%S.%fZ')

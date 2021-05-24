@@ -2,10 +2,10 @@ from __future__ import print_function
 import os
 from time import sleep
 import json
-import botocore
-import boto3
+
 from ingester.sink.elasticsearch import ElasticSink
 from ingester.source import S3Source
+
 import geoip2.database
 
 class Ingester:
@@ -15,7 +15,7 @@ class Ingester:
         self.sinks = sinks
         self.bucket_name = bucket_name
         self.key = key
-        self.geoip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20190402/GeoLite2-City.mmdb')
+        self.geoip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20210518/GeoLite2-City.mmdb')
 
     def put_sinks(self, msgs):
         for sink in self.sinks:

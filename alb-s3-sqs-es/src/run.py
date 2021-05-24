@@ -20,5 +20,5 @@ def lambda_handler(event, context):
                     key=key
                 )
             ingester.run()
-                
+
     return 'complete'

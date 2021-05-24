@@ -21,12 +21,12 @@ class S3Source(Source):
         self.object = self.s3.Object(bucket_name=bucket_name, key=key)
         if self.object is None:
             raise ValueError("Object Could not be found '{}'".format(key))
-    
+
     def get(self, geoip_reader):
         # get StreamingBody from botocore.response
         response = self.object.get()
 
-        try: 
+        try:
             gzipped = GzipFile(None, 'rb', fileobj=response['Body'])
             data = TextIOWrapper(gzipped)
         except OSError:
