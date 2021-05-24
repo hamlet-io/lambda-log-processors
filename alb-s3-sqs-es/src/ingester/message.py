@@ -7,7 +7,7 @@ class Message:
 
     def __init__(self, log_msg, geoip_reader):
 
-        split_log = csv.reader([ log_msg ], delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL )
+        split_log = csv.reader([ log_msg ], delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE )
 
         self.message = {
             'type' : split_log[0],
@@ -94,7 +94,7 @@ class Message:
 
         # Expand Request details
         if self.message['request'] is not None:
-            split_request = csv.reader([ self.message['request'] ], delimiter=' ', quotechar='"', quoting=csv.QUOTE_MINIMAL )
+            split_request = csv.reader([ self.message['request'] ], delimiter=' ', quotechar='"', quoting=csv.QUOTE_NONE )
             self.message['request_http_method'] = split_request[0]
             self.message['request_uri'] = split_request[1]
             self.message['request_http_version'] = split_request[2]
