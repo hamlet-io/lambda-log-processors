@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_tag_release.outputs.upload_url }}
-          asset_path: ./alb-s3-sqs-es/.serverless/alb-s3.zip
+          asset_path: ./alb-s3-sqs-es/.serverless/src-alb-s3-sqs-es-dev-alb-s3.zip
           asset_name: alb-s3.zip
           asset_content_type: application/zip
 

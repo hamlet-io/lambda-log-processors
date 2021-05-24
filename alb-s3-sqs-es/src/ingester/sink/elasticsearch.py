@@ -2,7 +2,7 @@ import json
 from aws_requests_auth.boto_utils import BotoAWSRequestsAuth
 from elasticsearch import Elasticsearch, RequestsHttpConnection
 from elasticsearch.exceptions import ConflictError
-from ingester.sink import Sink
+from . import Sink
 
 class ElasticSink(Sink):
 

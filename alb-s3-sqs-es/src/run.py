@@ -1,6 +1,13 @@
-from __future__ import print_function
-from ingester.ingester import Ingester
 import json
+import sentry_sdk
+from sentry_sdk.integrations.aws_lambda import AwsLambdaIntegration
+
+from ingester.ingester import Ingester
+
+sentry_sdk.init(
+    integrations=[AwsLambdaIntegration()],
+    traces_sample_rate=1.0
+)
 
 def lambda_handler(event, context):
     print(event)

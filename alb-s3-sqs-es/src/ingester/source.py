@@ -1,10 +1,10 @@
 import botocore
 import boto3
-import json
 from io import TextIOWrapper
 from gzip import GzipFile
-from ingester.message import Message
 from abc import ABC
+
+from .message import Message
 
 class Source(ABC):
 

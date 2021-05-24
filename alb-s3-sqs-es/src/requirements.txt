@@ -10,3 +10,5 @@ urllib3==1.24.2
 pytest
 # GeoIP lookup
 geoip2
+
+sentry-sdk
