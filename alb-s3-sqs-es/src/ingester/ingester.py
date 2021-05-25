@@ -20,7 +20,7 @@ class Ingester:
     def run(self ):
         print("Fetching messages...")
         self.source = S3Source(bucket_name=self.bucket_name, key=self.key)
-        msgs = self.source.get(self.geoip_reader)
+        msgs = self.source.get()
         print(
             "Got %s message%s" % (
                 len(msgs),
