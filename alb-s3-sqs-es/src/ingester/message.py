@@ -3,10 +3,13 @@ import io
 import re
 import datetime
 import geoip2.errors
+import geoip2.database
+
+geoip_reader = geoip2.database.Reader('geoip/GeoLite2-City_20210518/GeoLite2-City.mmdb')
 
 class Message:
 
-    def __init__(self, log_msg, geoip_reader):
+    def __init__(self, log_msg):
 
         log_reader = csv.reader(io.StringIO(log_msg), delimiter=' ' )
 

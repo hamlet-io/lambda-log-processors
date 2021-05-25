@@ -3,6 +3,7 @@ def test_app_loadbalancer_log_http(loadbalancer_http_entry):
 
     assert msg['type'] == 'http'
     assert 'client_geoip' in msg
+    assert len(msg['client_geoip']['country_iso_code']) == 2
 
 
 def test_app_loadbalancer_log_local_http(loadbalancer_local_http_entry):
