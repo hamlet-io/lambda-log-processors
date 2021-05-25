@@ -102,7 +102,6 @@ class Message:
             if self.message['request'] is not None:
                 request_reader = csv.reader(io.StringIO(self.message['request']), delimiter=' ')
                 for split_request in request_reader:
-                    print(split_request)
                     self.message['request_http_method'] = split_request[0]
                     self.message['request_uri'] = split_request[1]
                     self.message['request_http_version'] = split_request[2]
