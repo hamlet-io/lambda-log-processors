@@ -56,7 +56,7 @@ import datetime
 def transformLogEvent(log_event, cloudwatch_info):
     """Transform each log event.
 
-    The default implementation below will to to create a json message from the message field if it can't 
+    The default implementation below will to to create a json message from the message field if it can't
     the message will be passed as a string. This should allow support for JSON and string cloudwatch logs
 
     Args:
@@ -70,17 +70,17 @@ def transformLogEvent(log_event, cloudwatch_info):
 
     isotime = datetime.datetime.utcfromtimestamp( log_event['timestamp'] / 1000 ).isoformat()
 
-    try: 
+    try:
         json_event = json.loads(log_event['message'])
         if json_event.get('timestamp') is None:
             json_event['timestamp'] = isotime
-        
+
     except json.JSONDecodeError:
         json_event = {
             'message' : log_event['message'],
             'timestamp' : isotime
         }
-    
+
     json_event['cloudwatch'] = cloudwatch_info
 
     return json.dumps(json_event)
@@ -102,12 +102,12 @@ def processRecords(records):
                 'recordId': recId
             }
         elif data['messageType'] == 'DATA_MESSAGE':
-            
+
             cloudwatch_info = {}
             cloudwatch_info['log_group'] = data['logGroup']
             cloudwatch_info['log_stream'] = data['logStream']
 
-            for i, event in enumerate(data['logEvents']): 
+            for i, event in enumerate(data['logEvents']):
                 if i == 0:
                     cw_log_data = transformLogEvent(event, cloudwatch_info)
 
@@ -118,9 +118,9 @@ def processRecords(records):
                     }
                 else:
 
-                    reingest_event = data 
+                    reingest_event = data
                     reingest_event['logEvents'] = [ event ]
-                    
+
                     reingest_json = json.dumps(reingest_event)
                     reingest_bytes = reingest_json.encode('utf-8')
                     reignest_compress = gzip.compress(reingest_bytes)
@@ -178,7 +178,12 @@ def lambda_handler(event, context):
     streamARN = event['deliveryStreamArn']
     region = streamARN.split(':')[3]
     streamName = streamARN.split('/')[1]
+
+    print('Stream: %s, Region: %s, Received: %d' % (streamName, region, len(event['records'])) )
+
     records = list(processRecords(event['records']))
+    print('Expanded Total: %d' % (len(records)) )
+
     projectedSize = 0
     dataByRecordId = {rec['recordId']: createReingestionRecord(rec) for rec in event['records']}
     putRecordBatches = []
@@ -195,7 +200,7 @@ def lambda_handler(event, context):
         if projectedSize > 6000000 or rec['result'] == 'Reingest':
             totalRecordsToBeReingested += 1
 
-            if rec['result'] == 'Reingest': 
+            if rec['result'] == 'Reingest':
                 recordsToReingest.append(
                     getReingestionRecord(createReingestionRecord(rec))
                 )
@@ -206,7 +211,7 @@ def lambda_handler(event, context):
                 records[idx]['result'] = 'Dropped'
                 del(records[idx]['data'])
 
-        if rec['result'] != 'Reingest': 
+        if rec['result'] != 'Reingest':
                 recordsToReturn.append(rec)
 
         # split out the record batches into multiple groups, 500 records at max per group
@@ -221,6 +226,7 @@ def lambda_handler(event, context):
     # iterate and call putRecordBatch for each group
     recordsReingestedSoFar = 0
     if len(putRecordBatches) > 0:
+        print('Total reingestion batches: %d' % (len(putRecordBatches)) )
         client = boto3.client('firehose', region_name=region)
         for recordBatch in putRecordBatches:
             putRecordsToFirehoseStream(streamName, recordBatch, client, attemptsMade=0, maxAttempts=20)
@@ -228,7 +234,7 @@ def lambda_handler(event, context):
             print('Reingested %d/%d' % (recordsReingestedSoFar, totalRecordsToBeReingested ))
     else:
         print('No records to be reingested')
-    
+
     print( 'Records processed: ' + str(len(recordsToReturn)) + ' - Log records found: ' + str(len(records)) )
-   
+
     return {"records": recordsToReturn}
