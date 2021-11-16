@@ -111,11 +111,46 @@ def processRecords(records):
                 if i == 0:
                     cw_log_data = transformLogEvent(event, cloudwatch_info)
 
-                    yield {
-                        'data' : str(base64.b64encode(cw_log_data.encode()), 'utf-8'),
-                        'result' : 'Ok',
-                        'recordId' : recId
-                    }
+                    # Determine if extra ways to categorize the event were provided
+                    categories = getattr(cw_log_data, 'categories', [] )
+                    if not isinstance(categories, list):
+                        categories = [categories]
+
+                    # Get unique categories - ensure Logs is always in the list at a minimum
+                    categories = list(set(categories.append('Logs')))
+
+                    for j,category in enumerate(categories):
+                        if j == 0:
+                            cw_log_data['categories'] = category
+
+                            yield {
+                                'data' : str(base64.b64encode(cw_log_data.encode()), 'utf-8'),
+                                'result' : 'Ok',
+                                'recordId' : recId,
+                                'metadata' : {
+                                    'partitionKeys': {
+                                        'category' : category
+                                    }
+                                }
+                            }
+
+                        else:
+                            category_event = event
+                            category_event['categories'] = [category]
+
+                            reingest_event = data
+                            reingest_event['logEvents'] = [ category_event ]
+
+                            reingest_json = json.dumps(reingest_event)
+                            reingest_bytes = reingest_json.encode('utf-8')
+                            reignest_compress = gzip.compress(reingest_bytes)
+
+                            yield {
+                                'data' : str( base64.b64encode( reignest_compress ), 'utf-8'),
+                                'result' : 'Reingest',
+                                'recordId' : recId
+                            }
+
                 else:
 
                     reingest_event = data
