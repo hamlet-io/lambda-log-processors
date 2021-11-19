@@ -86,6 +86,8 @@ def transformLogEvent(log_event, cloudwatch_info):
 
     return json_event
 
+DEFAULT_CATEGORY = 'Logs'
+
 def processRecords(records):
     for r in records:
         data = base64.b64decode(r['data'])
@@ -97,6 +99,7 @@ def processRecords(records):
         CONTROL_MESSAGE are sent by CWL to check if the subscription is reachable.
         They do not contain actual data.
         """
+
         if data['messageType'] == 'CONTROL_MESSAGE':
             yield {
                 'result': 'Dropped',
@@ -110,58 +113,69 @@ def processRecords(records):
 
             for i, event in enumerate(data['logEvents']):
                 if i == 0:
-                    cw_log_json = transformLogEvent(event, cloudwatch_info)
+                    cw_log_dict = transformLogEvent(event, cloudwatch_info)
 
                     # Check if we want to categorize on the basis of an attribute
                     categorization_attribute = os.environ.get("CATEGORIZATION_ATTRIBUTE", None)
 
                     if categorization_attribute is not None:
 
-                        # Determine if extra ways to categorize the event were provided
-                        categories = getattr(cw_log_json, categorization_attribute, [] )
-                        if not isinstance(categories, list):
-                            categories = [categories]
+                        # Check if category info has already been processed
+                        if 'metadata' in data:
+                            # Convert to a string
+                            cw_log_string = json.dumps(cw_log_dict)
 
-                        # Get unique categories - ensure "Logs" is always in the list at a minimum
-                        categories = list(set(categories.append('Logs')))
+                            yield {
+                                'data' : str(base64.b64encode(cw_log_string.encode()), 'utf-8'),
+                                'result' : 'Ok',
+                                'recordId' : recId,
+                                'metadata' : data['metadata']
+                            }
+                        else:
+                            # Determine the required categories
+                            categories = cw_log_dict.get(categorization_attribute, [DEFAULT_CATEGORY] )
 
-                        for j,category in enumerate(categories):
-                            if j == 0:
-                                cw_log_json['categories'] = category
+                            # If it isn't a list, convert to one
+                            if not isinstance(categories, list):
+                                categories = [categories]
 
-                                # Format the record including delimiter
-                                cw_log_string = json.dumps(cw_log_json)
+                            # Ensure default category is present
+                            if not DEFAULT_CATEGORY in categories:
+                                categories.append(DEFAULT_CATEGORY)
 
-                                yield {
-                                    'data' : str(base64.b64encode(cw_log_string.encode()), 'utf-8'),
-                                    'result' : 'Ok',
-                                    'recordId' : recId,
-                                    'metadata' : {
-                                        'partitionKeys': {
-                                            'category' : category
+                            for category in categories:
+                                if category == DEFAULT_CATEGORY:
+                                    # Convert to a string
+                                    cw_log_string = json.dumps(cw_log_dict)
+
+                                    yield {
+                                        'data' : str(base64.b64encode(cw_log_string.encode()), 'utf-8'),
+                                        'result' : 'Ok',
+                                        'recordId' : recId,
+                                        'metadata' : {
+                                            'partitionKeys': {
+                                                'category' : DEFAULT_CATEGORY
+                                            }
                                         }
                                     }
-                                }
 
-                            else:
-                                category_event = event
-                                category_event['message'][categorization_attribute] = [category]
+                                else:
+                                    reingest_event = data
+                                    reingest_event['logEvents'] = [ event ]
+                                    reingest_event['metadata'] = { 'partitionKeys' : { 'category' : category } }
 
-                                reingest_event = data
-                                reingest_event['logEvents'] = [ category_event ]
+                                    reingest_json = json.dumps(reingest_event)
+                                    reingest_bytes = reingest_json.encode('utf-8')
+                                    reingest_compress = gzip.compress(reingest_bytes)
 
-                                reingest_json = json.dumps(reingest_event)
-                                reingest_bytes = reingest_json.encode('utf-8')
-                                reignest_compress = gzip.compress(reingest_bytes)
-
-                                yield {
-                                    'data' : str( base64.b64encode( reignest_compress ), 'utf-8'),
-                                    'result' : 'Reingest',
-                                    'recordId' : recId
-                                }
+                                    yield {
+                                        'data' : str( base64.b64encode( reingest_compress ), 'utf-8'),
+                                        'result' : 'Reingest',
+                                        'recordId' : recId
+                                    }
                     else:
-                        # Format the record including delimiter
-                        cw_log_string = json.dumps(cw_log_json)
+                        # Convert to a string
+                        cw_log_string = json.dumps(cw_log_dict)
 
                         yield {
                             'data' : str(base64.b64encode(cw_log_string.encode()), 'utf-8'),
@@ -176,10 +190,10 @@ def processRecords(records):
 
                     reingest_json = json.dumps(reingest_event)
                     reingest_bytes = reingest_json.encode('utf-8')
-                    reignest_compress = gzip.compress(reingest_bytes)
+                    reingest_compress = gzip.compress(reingest_bytes)
 
                     yield {
-                        'data' : str( base64.b64encode( reignest_compress ), 'utf-8'),
+                        'data' : str( base64.b64encode( reingest_compress ), 'utf-8'),
                         'result' : 'Reingest',
                         'recordId' : recId
                     }
@@ -197,6 +211,11 @@ def putRecordsToFirehoseStream(streamName, records, client, attemptsMade, maxAtt
     # response will prevent this
     response = None
     try:
+        if os.environ.get("DEBUG", "false") == "true":
+            print ('Reingesting')
+            for record in records:
+                with gzip.open(BytesIO(record['Data']), 'rb') as f:
+                    print(json.loads(f.read()))
         response = client.put_record_batch(DeliveryStreamName=streamName, Records=records)
     except Exception as e:
         failedRecords = records
@@ -289,5 +308,10 @@ def lambda_handler(event, context):
         print('No records to be reingested')
 
     print( 'Records processed: ' + str(len(recordsToReturn)) + ' - Log records found: ' + str(len(records)) )
+
+    if os.environ.get("DEBUG", "false") == "true":
+        print ('Returning')
+        for record in recordsToReturn:
+            print(json.loads(base64.b64decode(record['data'].encode())))
 
     return {"records": recordsToReturn}

@@ -1,0 +1,10 @@
+
+{
+    "deliveryStreamArn" : "arn:aws:firehose:us-east-1:123456789012:deliverystream/test-event-siem-categories",
+    "records" : [
+        {
+            "recordId" : "abc123",
+            "data" : "H4sICCYdl2EAA3Rlc3QtZXZlbnQtc2llbS1jYXRlZ29yaWVzLWRhdGEuanNvbgDNU9FumzAUfe9XWF73Fgcbgw2R8hBtWZ+qaU2mopZqIuCklgAjmwRFUf59NmlItodKmzRpPF37HM499x443AD7wEoYk23Ect8IOAHw82w5+3E/Xyxmd3M4OlFUVwvtwMCPOI39EPs0OIOl2txptW0c7olcVZXQufBk3YqNzlqpai9rmlLmQ+11Xed1YuXtyJXIotUiq5zKFR3ZGlk6snS0I/2bWREWNI4JEmxFUMDZCsV4xRGhhcg5XZNonZ11zXZlci0bp/VFlq3QxnZ47sGeMBhGV4aRUWWNLpAwqLxWStZSi1dlhOk9J9ZkMrCTZm+nMYl1nGBE5p++fn94/ObfP0ZPsO/7cpl5vhN1+6ujw1D1JFm4jdCAExpRn1FCacwYZyyKmT0zzAkPeBwwHvg4onGAiW853EKEs7c1DGqttGm3WeXCImHImO/jmNhUf+O9fROu9SGFNgqxUVoKk8LJcwqNFFUKX0bpmWevQQqXei/rDWgVaLTKLQKabF/ZAcFaaaB0ITT4wAjmIVhrVQGKEQ6Qj0kMOtm+glst2kyWU87H4QjcFtLkamtDKaacjpnv7uy2y+H08cyYhhf2lI4jHqbQmnPDnpy5Hq4XxUtCJphMKBnboSlmKTzCYfTj6P0Uwj4F9o9SCP8khXMIf50B/18zOP0iN8efj+drUZ4EAAA="
+        }
+    ]
+}
