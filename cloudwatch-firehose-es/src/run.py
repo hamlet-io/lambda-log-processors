@@ -69,7 +69,7 @@ def transformLogEvent(log_event, cloudwatch_info):
 
     json_event = {}
 
-    isotime = datetime.datetime.utcfromtimestamp( log_event['timestamp'] / 1000 ).isoformat()
+    isotime = datetime.datetime.fromtimestamp( log_event['timestamp'] / 1000, tz=datetime.timezone.utc ).isoformat()
 
     try:
         json_event = json.loads(log_event['message'])
@@ -216,6 +216,7 @@ def putRecordsToFirehoseStream(streamName, records, client, attemptsMade, maxAtt
             for record in records:
                 with gzip.open(BytesIO(record['Data']), 'rb') as f:
                     print(json.loads(f.read()))
+        # Comment out the following line if testing locally
         response = client.put_record_batch(DeliveryStreamName=streamName, Records=records)
     except Exception as e:
         failedRecords = records
