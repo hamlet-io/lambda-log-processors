@@ -160,16 +160,16 @@ def processRecords(records):
                                     }
 
                                 else:
-                                    reingest_event = data
-                                    reingest_event['logEvents'] = [ event ]
-                                    reingest_event['metadata'] = { 'partitionKeys' : { 'category' : category } }
+                                    reingest_category_event = data.copy()
+                                    reingest_category_event['logEvents'] = [ event ]
+                                    reingest_category_event['metadata'] = { 'partitionKeys' : { 'category' : category } }
 
-                                    reingest_json = json.dumps(reingest_event)
-                                    reingest_bytes = reingest_json.encode('utf-8')
-                                    reingest_compress = gzip.compress(reingest_bytes)
+                                    reingest_category_json = json.dumps(reingest_category_event)
+                                    reingest_category_bytes = reingest_category_json.encode('utf-8')
+                                    reingest_category_compress = gzip.compress(reingest_category_bytes)
 
                                     yield {
-                                        'data' : str( base64.b64encode( reingest_compress ), 'utf-8'),
+                                        'data' : str( base64.b64encode( reingest_category_compress ), 'utf-8'),
                                         'result' : 'Reingest',
                                         'recordId' : recId
                                     }
@@ -185,7 +185,7 @@ def processRecords(records):
 
                 else:
 
-                    reingest_event = data
+                    reingest_event = data.copy()
                     reingest_event['logEvents'] = [ event ]
 
                     reingest_json = json.dumps(reingest_event)
