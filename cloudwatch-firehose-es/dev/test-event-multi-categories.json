@@ -1,0 +1,10 @@
+
+{
+    "deliveryStreamArn" : "arn:aws:firehose:us-east-1:123456789012:deliverystream/test-event-multi-categories",
+    "records" : [
+        {
+            "recordId" : "abc123",
+            "data" : "H4sICPZknGEAA3Rlc3QtZXZlbnQtbXVsdGktY2F0ZWdvcmllcy1kYXRhLmpzb24AzZRfb5swFMXf+yksr3uLg435EyLlIdpo1YcsapKpaKWaCBhqCTCySVAU5bvPkIVke+lUKVp5Mj7H9577s+T9DdAfLJhSUcZWu4rBMYBfp6vpz5m/XE7vfTg4WkRTMtmKljlyqWfa2KTWScxFdi/Fpmp1g8WiKJiMmcHLmmUyqrkojaiqch73a6NpGqNha2NLLoosa8mioq1yYUd6jbQdaTvaku5klNgJ9TyCmLMmyHKdNfLw2kWEJix2aUpGaXSqqzZrFUtetbXueF4zqXSH507sDH1gdBEYKZGX6CwxhfLLSkHKJXsViqkuc6BDBr07qHZ6GhXoxAFGxP8y/754ejRnT6MfsOv7cp7Z37Ky/jPRvl91Jp60RPAJVL9fc31vdVS02IltO45pYo/o+/nL9/t22yL7EGqoLBOSMxXC8XMIH77dzUM4ACEMgiCEL4PwdEDrencld7zMQC1AJUWsFVBFu0JnBqmQQMiESfDJIdi1QSpFAShG2EImJh5oeP0KbiWrI55PXGtoD8BtwlUsNppzMnHp0DHbPQ0w7/8+nxwT++ye0OHItXXMsJv6mKzt0faieEXIGJMxJUM9PcVOCA+wZ3AYvAHW/Dew9rvAvp+n+wZP+6PypNfhuXzwZ9fk6XxUntZ1ePqLxXxxTaDu/wJ6fGJvDr8A1NdHZN4GAAA="
+        }
+    ]
+}
