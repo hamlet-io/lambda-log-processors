@@ -1,6 +1,6 @@
 import pytest
 
-from ingester.message import Message
+from alb_s3.ingester.message import Message
 
 @pytest.fixture
 def loadbalancer_local_http_entry():

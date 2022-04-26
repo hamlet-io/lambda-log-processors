@@ -6,6 +6,5 @@ LOGGER = logging.getLogger(__name__)
 
 
 class Sink(ABC):
-
     def __init__(self):
         pass

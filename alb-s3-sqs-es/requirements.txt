@@ -8,6 +8,8 @@ elasticsearch>=5.0.0,<6.0.0
 urllib3==1.26.5
 # actually needed at runtime if only to prevent error
 pytest
+flake8
+
 # GeoIP lookup
 geoip2
 

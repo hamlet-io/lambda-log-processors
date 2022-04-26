@@ -4,9 +4,6 @@ plugins:
   - serverless-python-requirements
   - serverless-offline
 
-package:
-  individually: true
-
 custom:
   pythonRequirements:
     dockerizePip: true
@@ -21,5 +18,4 @@ provider:
 
 functions:
   alb-s3:
-    module: src
-    handler: run.lambda_handler
+    handler: alb_s3/run.lambda_handler

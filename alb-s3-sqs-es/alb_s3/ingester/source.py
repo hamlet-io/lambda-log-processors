@@ -6,16 +6,16 @@ from abc import ABC
 
 from .message import Message
 
-class Source(ABC):
 
+class Source(ABC):
     def __init__(self):
         pass
+
 
 class S3Source(Source):
     def __init__(self, bucket_name, key):
         self.s3 = boto3.resource(
-            's3',
-            config=botocore.client.Config(signature_version='s3v4')
+            "s3", config=botocore.client.Config(signature_version="s3v4")
         )
         self.bucket = self.s3.Bucket(bucket_name)
         self.object = self.s3.Object(bucket_name=bucket_name, key=key)
@@ -27,7 +27,7 @@ class S3Source(Source):
         response = self.object.get()
 
         try:
-            gzipped = GzipFile(None, 'rb', fileobj=response['Body'])
+            gzipped = GzipFile(None, "rb", fileobj=response["Body"])
             data = TextIOWrapper(gzipped)
         except OSError:
             return []
