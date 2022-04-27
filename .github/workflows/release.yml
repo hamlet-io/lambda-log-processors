@@ -27,13 +27,13 @@ jobs:
       - name: Build alb project
         working-directory: alb-s3-sqs-es/
         run: |
-          npm ci
+          npm install
           npx sls package
 
       - name: Build cw firehose project
         working-directory: cloudwatch-firehose-es/
         run: |
-          npm ci
+          npm install
           npx sls package
 
       - name: Create Tag Release
