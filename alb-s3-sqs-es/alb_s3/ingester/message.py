@@ -5,7 +5,7 @@ import datetime
 import geoip2.errors
 import geoip2.database
 import pathlib
-
+from user_agents import parse
 
 module_path = (pathlib.Path(__file__).parent).parent.resolve()
 geoip_reader = geoip2.database.Reader(pathlib.PurePath(module_path, "geoip/GeoLite2-City_20210518/GeoLite2-City.mmdb"))
@@ -68,6 +68,16 @@ class Message:
                     self.message["client_ip"] = client_ip[:-1].join(":")
                     self.message["client_port"] = client_ip[-1]
 
+            # Parse User-Agent string
+            if self.message["user_agent"] is not None:
+                user_agent = parse(self.message["user_agent"])
+                user_agent_details = {}
+                user_agent_details["browser"] = user_agent.get_browser()
+                user_agent_details["os"] = user_agent.get_os()
+                user_agent_details["device"] = user_agent.get_device()
+                user_agent_details["is_bot"] = user_agent.is_bot
+                self.message["user_agent_details"] = user_agent_details
+
             # GeoIP Lookup
             if self.message["client_ip"] is not None:
                 geo_ip_response = None
@@ -123,3 +133,4 @@ class Message:
 
     def request_timestamp(self):
         return datetime.datetime.strptime(self.timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+    
