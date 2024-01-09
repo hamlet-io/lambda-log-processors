@@ -2,8 +2,8 @@ from __future__ import print_function
 import os
 from time import sleep
 
-from ingester.sink.elasticsearch import ElasticSink
-from ingester.source import S3Source
+from alb_s3.ingester.sink.elasticsearch import ElasticSink
+from alb_s3.ingester.source import S3Source
 
 
 class Ingester:
