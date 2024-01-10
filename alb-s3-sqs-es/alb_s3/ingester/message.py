@@ -69,7 +69,7 @@ class Message:
                     self.message["client_port"] = client_ip[-1]
 
             # Parse User-Agent string
-            if self.message["user_agent"] is not None:
+            if "user_agent" in self.message:
                 user_agent = parse(self.message["user_agent"])
                 user_agent_details = {}
                 user_agent_details["browser"] = user_agent.get_browser()
