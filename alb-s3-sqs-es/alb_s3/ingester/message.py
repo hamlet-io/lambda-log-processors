@@ -72,11 +72,22 @@ class Message:
             if "user_agent" in self.message:
                 user_agent = parse(self.message["user_agent"])
                 user_agent_details = {}
-                user_agent_details["browser"] = user_agent.get_browser()
-                user_agent_details["os"] = user_agent.get_os()
-                user_agent_details["device"] = user_agent.get_device()
+                user_agent_details["browser"] = user_agent.browser.family
+                user_agent_details["browser_version"] = user_agent.browser.version_string
+                user_agent_details["os"] = user_agent.os.family
+                user_agent_details["os_version"] = user_agent.os.version_string
+                user_agent_details["device_family"] = user_agent.device.family
+                user_agent_details["device_brand"] = user_agent.device.brand
+                user_agent_details["device_model"] = user_agent.device.model
+                user_agent_details["is_pc"] = user_agent.is_pc
                 user_agent_details["is_bot"] = user_agent.is_bot
+                user_agent_details["is_mobile"] = user_agent.is_mobile
+                user_agent_details["is_tablet"] = user_agent.is_tablet
+                user_agent_details["user_agent"] = user_agent.ua_string
+                
                 self.message["user_agent_details"] = user_agent_details
+                #pop the old key
+                del self.message['user_agent']
 
             # GeoIP Lookup
             if self.message["client_ip"] is not None:
@@ -108,11 +119,12 @@ class Message:
                         ] = geo_ip_response.subdivisions.most_specific.name
 
                     if geo_ip_response.location is not None:
-                        location = {
-                            "lon": geo_ip_response.location.longitude,
-                            "lat": geo_ip_response.location.latitude,
-                        }
-                        geoip_details["location"] = location
+                        if geo_ip_response.location.longitude is not None:
+                            location = {
+                                "lon": geo_ip_response.location.longitude,
+                                "lat": geo_ip_response.location.latitude,
+                            }
+                            geoip_details["location"] = location
                     self.message["client_geoip"] = geoip_details
 
             # Expand Request details
