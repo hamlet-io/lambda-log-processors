@@ -7,7 +7,7 @@ from . import Sink
 
 class ElasticSink(Sink):
     def __init__(
-        self, host, port, use_ssl, region, service, index_name, doc_type, use_sig4
+        self, host, port, use_ssl, region, service, index_name, use_sig4
     ):
         if use_sig4:
             auth = BotoAWSRequestsAuth(
@@ -25,12 +25,11 @@ class ElasticSink(Sink):
             es_args["connection_class"] = RequestsHttpConnection
         self.es = Elasticsearch(**es_args)
         self.index_name = index_name
-        self.doc_type = doc_type
 
     def _create_if_not_exists(self, index_name, body_json, doc_id):
         try:
             self.es.create(
-                index=index_name, doc_type=self.doc_type, body=body_json, id=doc_id
+                index=index_name, body=body_json, id=doc_id
             )
         except ConflictError:
             pass  # Benign

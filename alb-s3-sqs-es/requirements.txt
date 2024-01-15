@@ -5,8 +5,8 @@ requests
 aws-requests-auth
 #User-agent parser
 user-agents
-# ElasticSearch 5.x API client
-elasticsearch>=5.0.0,<6.0.0
+# ElasticSearch 7.9.0 API client
+elasticsearch==7.9.0
 urllib3==1.26.18
 # actually needed at runtime if only to prevent error
 pytest

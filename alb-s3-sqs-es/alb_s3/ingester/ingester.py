@@ -42,7 +42,6 @@ class Ingester:
                 region=os.environ.get("ELASTICSEARCH_API_REGION"),
                 service=os.environ.get("INGESTER_AWS_SERVICE"),
                 index_name=os.environ.get("ELASTICSEARCH_API_INDEX"),
-                doc_type=os.environ.get("INGESTER_ES_DOC_TYPE"),
                 use_sig4=use_sig4,
             )
             sinks.append(elasticsearch_sink)
