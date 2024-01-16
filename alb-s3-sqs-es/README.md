@@ -29,44 +29,48 @@ An example of the payload:
 The Log format is processed based on the AWS documentation and creates one to one field mappings for each field
 https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html
 
-# index setup
+# index setup (ES 7.9)
 
 ```curl
-PUT _template/lb_logs
+PUT _index_template/lb_logs
 {
-    "template": "lb_logs*",
-    "mappings": {
-        "lb_log": {
+    "index_patterns": [
+        "lb_logs*"
+    ],
+    "template": {
+        "mappings": {
+            "numeric_detection": false,
             "properties": {
                 "client_geoip.location": {
-                    "type": "geo_point"
+                    "type": "geo_point",
+                    "ignore_malformed": true
                 },
-                "request_processing_time" : {
-                    "type" : "double"
+                "request_processing_time": {
+                    "type": "float"
                 },
-                "response_processing_time" : {
-                    "type" : "double"
+                "response_processing_time": {
+                    "type": "float"
                 },
-                "target_processing_time" : {
-                    "type" : "double"
+                "target_processing_time": {
+                    "type": "float"
                 },
-                "sent_bytes" : {
-                    "type" : "integer"
+                "sent_bytes": {
+                    "type": "long"
                 },
-                "received_bytes" : {
-                    "type" : "integer"
+                "received_bytes": {
+                    "type": "long"
                 },
-                "elb_status_code" : {
-                    "type" : "short"
+                "elb_status_code": {
+                    "type": "short"
                 },
-                "target_status_code" : {
-                    "type" : "short"
+                "target_status_code": {
+                    "type": "short"
                 },
-                "client_ip" : {
+                "client_ip": {
                     "type": "ip"
                 },
-                "target_ip" : {
-                    "type" : "ip"
+                "target_ip": {
+                    "type": "ip"
                 }
             }
         }
