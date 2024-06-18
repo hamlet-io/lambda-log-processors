@@ -7,7 +7,7 @@ aws-requests-auth
 user-agents
 # ElasticSearch 7.9.0 API client
 elasticsearch==7.9.0
-urllib3==1.26.18
+urllib3==1.26.19
 # actually needed at runtime if only to prevent error
 pytest
 flake8
