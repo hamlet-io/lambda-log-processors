@@ -1,9 +1,9 @@
 on:
   push:
     branches:
-      - '*'
+      - "*"
     tags:
-      - 'v*'
+      - "v*"
   pull_request:
 
 name: Create Lambda Releases
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           lfs: true
 
@@ -28,13 +28,13 @@ jobs:
         working-directory: alb-s3-sqs-es/
         run: |
           npm install
-          npx sls package
+          npx osls package
 
       - name: Build cw firehose project
         working-directory: cloudwatch-firehose-es/
         run: |
           npm install
-          npx sls package
+          npx osls package
 
       - name: Create Tag Release
         id: create_tag_release

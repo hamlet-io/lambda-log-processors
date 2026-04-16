@@ -1,23 +1,14 @@
 service: cloudwatch-firehose-es
 
-plugins:
-  - serverless-python-requirements
-
 package:
   individually: true
   patterns:
-    - '!./**'
-    - './src/**'
-
-custom:
-  pythonRequirements:
-    dockerizePip: true
-    invalidateCaches: true
-    fileName: requirements.txt
+    - "!**"
+    - "./src/run.py"
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.14
   stage: dev
   region: ap-southeast-2
   lambdaHashingVersion: 20201221
