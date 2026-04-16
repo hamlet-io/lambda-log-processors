@@ -8,10 +8,11 @@ custom:
   pythonRequirements:
     dockerizePip: true
     invalidateCaches: true
+    dockerImage: public.ecr.aws/sam/build-python3.14:latest-x86_64
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.14
   stage: dev
   region: ap-southeast-2
   lambdaHashingVersion: 20201221
